@@ -1,1 +1,105 @@
-# Garcon-ou-fille-
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10182e">
+<title>Le secret de bébé</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#080d1c;--card:#111a31;--text:#f7f9ff;--muted:#aeb8d2;--accent:#6fa4ff;--pink:#ff8fb3}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+body{overflow-x:hidden}.app{min-height:100vh;position:relative;display:flex;align-items:center;justify-content:center;padding:20px}
+.bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(circle at 20% 10%,#29447755,transparent 34%),radial-gradient(circle at 85% 90%,#71334c33,transparent 36%)}
+.star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.7;animation:twinkle 2s infinite alternate}
+@keyframes twinkle{to{opacity:.15;transform:scale(.4)}}
+.card{width:min(100%,460px);min-height:650px;border:1px solid #ffffff16;background:linear-gradient(145deg,#121c36f5,#0d1429f5);border-radius:32px;padding:28px 22px;box-shadow:0 25px 80px #0008;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.screen{animation:fade .45s ease}@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.logo{font-size:72px;text-align:center;filter:drop-shadow(0 8px 20px #0006)}
+.eyebrow{text-align:center;letter-spacing:3px;color:#8ea3cb;font-size:12px;font-weight:800;margin-top:8px}
+h1{font-size:36px;line-height:1.05;text-align:center;margin:12px 0}
+h2{text-align:center;font-size:25px;line-height:1.2;margin:12px 0 18px}
+p{text-align:center;color:var(--muted);line-height:1.55}
+button{border:0;border-radius:18px;padding:16px 18px;width:100%;font-size:16px;font-weight:800;cursor:pointer;transition:.18s}
+.primary{background:linear-gradient(135deg,#6fa4ff,#4c72ff);color:#fff;box-shadow:0 10px 25px #527bff35}
+.primary:active{transform:scale(.97)}
+.secondary{background:#ffffff0d;color:#dce4f7;border:1px solid #ffffff12}
+.timer{font-size:82px;text-align:center;font-weight:900;letter-spacing:-5px;margin:12px 0;color:#fff}
+.timer small{display:block;font-size:13px;letter-spacing:3px;color:#8391af;margin-top:-5px}
+.dots{display:flex;gap:7px;justify-content:center;margin:18px 0}.dot{width:9px;height:9px;border-radius:50%;background:#293450}.dot.on{background:#75a7ff}
+.choice{margin-top:11px;background:#ffffff0a;color:#eef3ff;border:1px solid #ffffff14;text-align:left;display:flex;align-items:center;gap:12px}.choice span{font-size:25px}.choice:active{transform:scale(.98)}
+.badge{text-align:center;color:#91a4c9;font-size:12px;font-weight:700;margin-bottom:4px}
+.progress{height:6px;background:#222d47;border-radius:99px;margin:0 0 20px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,#6fa4ff,#9bbdff);width:0;transition:.5s}
+.feedback{text-align:center;min-height:24px;font-size:13px;color:#ffb5c9;margin-top:10px}
+.revealWrap{text-align:center;position:relative;z-index:2}.baby{font-size:105px;animation:bounce 1.2s infinite alternate}@keyframes bounce{to{transform:translateY(-8px) scale(1.04)}}
+.revealTitle{font-size:48px;line-height:.95;margin:12px 0;background:linear-gradient(90deg,#9bc4ff,#fff,#6fa4ff);-webkit-background-clip:text;color:transparent}
+.flash{position:fixed;inset:0;background:#dcebff;z-index:20;animation:flash .65s ease forwards;pointer-events:none}@keyframes flash{0%{opacity:1}100%{opacity:0}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}.piece{position:absolute;top:-30px;width:10px;height:18px;border-radius:2px;animation:drop 3.5s linear forwards}
+@keyframes drop{to{transform:translate3d(var(--x),110vh,0) rotate(900deg);opacity:1}}
+.pulse{animation:pulse .8s ease-in-out infinite alternate}@keyframes pulse{to{transform:scale(1.04);text-shadow:0 0 35px #75a7ff}}
+.secret{font-size:14px;color:#7e91b5;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="bg" id="stars"></div>
+<div class="app"><main class="card" id="app"></main></div>
+<script>
+const app=document.getElementById('app');
+const qs=[
+ {q:"Un premier indice… Que trouve-t-on généralement dans une chambre de bébé ?",a:[["🧸","Des peluches"],["🎮","Une console"],["🎸","Un ampli de guitare"]],ok:0,wrong:"Bien essayé 😏 Ce n'est pas encore ça !"},
+ {q:"Le médecin vous donne un indice mystérieux… Quelle couleur choisirais-tu pour ce secret ?",a:[["💗","Rose"],["💙","Bleu"],["💛","Jaune"]],ok:1,wrong:"Hmm… le mystère reste entier 👀"},
+ {q:"Question piège ! Quelle phrase cache le mieux le secret des futurs parents ?",a:[["🤫","On ne dira rien !"],["🎁","Une surprise se prépare…"],["👶","Un petit garçon arrive !"]],ok:0,wrong:"Trop facile ! Mais ce n'est pas encore la révélation 😈"},
+ {q:"Dernière étape. Ton intuition te dit quoi ?",a:[["👧","Une petite fille"],["👦","Un petit garçon"],["🎲","Impossible de deviner !"]],ok:1,wrong:"Dernier petit doute… Choisis encore une fois 😉"}
+];
+let step=0;
+
+function stars(){for(let i=0;i<70;i++){let s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*2+'s';document.getElementById('stars').appendChild(s)}}
+function home(){
+app.innerHTML=`<section class="screen">
+<div class="logo">🔐</div><div class="eyebrow">UNE MISSION TRÈS SPÉCIALE</div>
+<h1>Le secret<br>de bébé</h1>
+<p>Un petit être est en route… mais il reste une chose à découvrir.</p>
+<p><strong>Fille ou garçon ?</strong></p>
+<button class="primary" onclick="countdown()">🎁 Commencer la mission</button>
+<div class="secret">⚠️ Attention : le secret ne sera révélé qu'à la toute fin.</div>
+</section>`;
+}
+function countdown(){
+let n=3;renderTimer(n);
+const t=setInterval(()=>{n--;if(n<=0){clearInterval(t);game()}else renderTimer(n)},900);
+}
+function renderTimer(n){
+app.innerHTML=`<section class="screen"><div class="eyebrow">LA MISSION COMMENCE DANS…</div><div class="timer pulse">${n}<small>SECONDES</small></div><p>Prépare-toi à découvrir le secret 👀</p></section>`;
+}
+function game(){
+renderQ();
+}
+function renderQ(){
+const q=qs[step];let dots=qs.map((_,i)=>`<i class="dot ${i<=step?'on':''}"></i>`).join('');
+app.innerHTML=`<section class="screen">
+<div class="badge">INDICE ${step+1} SUR ${qs.length}</div><div class="progress"><div class="bar" style="width:${(step/qs.length)*100}%"></div></div>
+<div class="dots">${dots}</div><h2>${q.q}</h2><div id="choices"></div><div class="feedback" id="feedback"></div>
+</section>`;
+q.a.forEach((x,i)=>{let b=document.createElement('button');b.className='choice';b.innerHTML=`<span>${x[0]}</span>${x[1]}`;b.onclick=()=>answer(i);document.getElementById('choices').appendChild(b)});
+}
+function answer(i){
+const q=qs[step],fb=document.getElementById('feedback');
+if(i!==q.ok){fb.textContent=q.wrong;fb.style.color='#ff9dbb';navigator.vibrate?.(100);return}
+navigator.vibrate?.([40,30,70]);step++;
+if(step<qs.length){fb.textContent="Bonne réponse… Le secret approche 👀";fb.style.color='#9fc4ff';setTimeout(renderQ,600)}
+else setTimeout(reveal,650);
+}
+function reveal(){
+app.innerHTML=`<section class="screen revealWrap"><div class="baby">🎈</div><div class="eyebrow">LE MOMENT EST ARRIVÉ…</div><div class="revealTitle">C'EST UN<br>GARÇON !</div><p>💙 Félicitations 💙</p><p>Un petit garçon va bientôt rejoindre la famille.</p><button class="primary" onclick="celebrate()">🎉 Fêter la nouvelle</button></section>`;
+celebrate();
+}
+function celebrate(){
+const f=document.createElement('div');f.className='flash';document.body.appendChild(f);setTimeout(()=>f.remove(),700);
+const c=document.createElement('div');c.className='confetti';
+for(let i=0;i<150;i++){let e=document.createElement('i');e.className='piece';e.style.left=Math.random()*100+'%';e.style.background=['#6fa4ff','#9fc4ff','#d9e9ff','#fff','#3e73e8'][i%5];e.style.setProperty('--x',(Math.random()*240-120)+'px');e.style.animationDelay=Math.random()*1.4+'s';e.style.transform=`rotate(${Math.random()*360}deg)`;c.appendChild(e)}
+document.body.appendChild(c);setTimeout(()=>c.remove(),5000);
+}
+stars();home();
+</script>
+</body>
+</html>#
